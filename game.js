@@ -8,6 +8,7 @@ const BRICK_W = 48; // 480 / 10 (sprite 32x16 escalado x1.5)
 const BRICK_H = 24;
 const BRICK_TOP = 80; // margen superior para el HUD
 const BRICK_COLORS = ['red', 'yellow', 'cyan', 'magenta', 'hotpink', 'green']; // de arriba a abajo
+const BRICK_POINTS = 10;
 const PADDLE_W = 96;
 const PADDLE_H = 14;
 const PADDLE_SPEED = 420; // px/s (teclado)
@@ -21,6 +22,7 @@ const ctx = canvas.getContext('2d');
 // Estado del juego (se irá ampliando en pasos posteriores)
 const game = {
   state: 'start', // 'start' | 'playing' (el resto llega en pasos posteriores)
+  score: 0,
   paddle: { x: (CANVAS_W - PADDLE_W) / 2, y: 600, w: PADDLE_W, h: PADDLE_H },
   ball: { x: 0, y: 0, vx: 0, vy: 0, size: BALL_SIZE, stuck: true },
   bricks: [], // { x, y, w, h, color, alive }
@@ -162,6 +164,33 @@ function update(dt) {
       ball.vx = BALL_SPEED * Math.sin(angle);
       ball.vy = -BALL_SPEED * Math.cos(angle);
       ball.y = paddle.y - ball.size;
+    }
+    // Colisión con bloques: rompe uno por frame e invierte solo el eje de menor solape
+    for (const b of game.bricks) {
+      if (!b.alive) continue;
+      if (
+        ball.x + ball.size <= b.x ||
+        ball.x >= b.x + b.w ||
+        ball.y + ball.size <= b.y ||
+        ball.y >= b.y + b.h
+      ) continue;
+
+      const overlapX = Math.min(ball.x + ball.size - b.x, b.x + b.w - ball.x);
+      const overlapY = Math.min(ball.y + ball.size - b.y, b.y + b.h - ball.y);
+      const ballCX = ball.x + ball.size / 2;
+      const ballCY = ball.y + ball.size / 2;
+      if (overlapX < overlapY) {
+        const fromLeft = ballCX < b.x + b.w / 2;
+        ball.vx = fromLeft ? -Math.abs(ball.vx) : Math.abs(ball.vx);
+        ball.x += fromLeft ? -overlapX : overlapX;
+      } else {
+        const fromTop = ballCY < b.y + b.h / 2;
+        ball.vy = fromTop ? -Math.abs(ball.vy) : Math.abs(ball.vy);
+        ball.y += fromTop ? -overlapY : overlapY;
+      }
+      b.alive = false;
+      game.score += BRICK_POINTS;
+      break;
     }
     // Por abajo no rebota: perder la bola llega en el Paso 9
   }
