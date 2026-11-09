@@ -17,6 +17,21 @@ const PADDLE_SPEED = 420; // px/s (teclado)
 const BALL_SIZE = 14;
 const BALL_SPEED = 360; // px/s, constante
 const MAX_BOUNCE_ANGLE = Math.PI / 3; // 60° respecto a la vertical
+const PARTICLE_COUNT = 8; // partículas por bloque roto
+const PARTICLE_SIZE = 4; // lado del cuadrado en px
+const PARTICLE_LIFE = 400; // ms de vida
+const PARTICLE_SPEED_MIN = 60; // px/s
+const PARTICLE_SPEED_MAX = 180; // px/s
+const PARTICLE_GRAVITY = 900; // px/s², hacia abajo
+const PARTICLE_COLORS = {
+  // hex aproximado al color de cada fila de BRICK_COLORS
+  red: '#e53935',
+  yellow: '#fdd835',
+  cyan: '#26c6da',
+  magenta: '#ab47bc',
+  hotpink: '#ff4081',
+  green: '#43a047',
+};
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -31,6 +46,7 @@ const game = {
   ball: { x: 0, y: 0, vx: 0, vy: 0, size: BALL_SIZE, stuck: true },
   bricks: [], // { x, y, w, h, color, alive }
   explosions: [], // { x, y, w, h, color, start } (start en ms)
+  particles: [], // { x, y, vx, vy, color, age } (age en ms, acumulado con dt)
 };
 
 // Récord: localStorage con respaldo en memoria si falla
@@ -107,6 +123,7 @@ function startGame() {
   game.lives = INITIAL_LIVES;
   game.bricks = createBricks();
   game.explosions = [];
+  game.particles = [];
   game.paddle.x = (CANVAS_W - PADDLE_W) / 2;
   stickBall();
   game.state = 'playing';
