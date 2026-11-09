@@ -22,7 +22,7 @@ const ctx = canvas.getContext('2d');
 
 // Estado del juego (se irá ampliando en pasos posteriores)
 const game = {
-  state: 'start', // 'start' | 'playing' | 'gameover' | 'won' (pausa llega en el Paso 10)
+  state: 'start', // 'start' | 'playing' | 'paused' | 'gameover' | 'won'
   score: 0,
   lives: INITIAL_LIVES,
   paddle: { x: (CANVAS_W - PADDLE_W) / 2, y: 600, w: PADDLE_W, h: PADDLE_H },
@@ -88,6 +88,15 @@ function handleAction() {
   }
 }
 
+// Pausa: solo desde 'playing'; la misma tecla reanuda
+function togglePause() {
+  if (game.state === 'playing') {
+    game.state = 'paused';
+  } else if (game.state === 'paused') {
+    game.state = 'playing';
+  }
+}
+
 let lastTime = 0;
 
 // Entrada
@@ -114,6 +123,11 @@ window.addEventListener('keydown', (e) => {
     if (!e.repeat) handleAction();
     return;
   }
+  if (e.code === 'KeyP' || e.code === 'Escape') {
+    e.preventDefault();
+    if (!e.repeat) togglePause();
+    return;
+  }
   setKey(e, true);
 });
 canvas.addEventListener('mousedown', handleAction);
@@ -121,6 +135,7 @@ window.addEventListener('keyup', (e) => setKey(e, false));
 
 // La pala sigue al cursor en X (centrada en el cursor)
 canvas.addEventListener('mousemove', (e) => {
+  if (game.state === 'paused') return;
   const rect = canvas.getBoundingClientRect();
   const mouseX = e.clientX - rect.left - canvas.clientLeft;
   game.paddle.x = clampPaddle(mouseX - game.paddle.w / 2);
@@ -131,6 +146,7 @@ function clampPaddle(x) {
 }
 
 function update(dt) {
+  if (game.state === 'paused') return; // todo congelado
   const dir = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
   if (dir !== 0) {
     game.paddle.x = clampPaddle(game.paddle.x + dir * PADDLE_SPEED * dt);
@@ -253,6 +269,11 @@ function render() {
     ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
     drawCenteredText('ARKANOID', 260, 'bold 48px monospace', '#ffffff');
     drawCenteredText('Pulsa Espacio o haz clic para empezar', 320, '16px monospace', '#cccccc');
+  } else if (game.state === 'paused') {
+    ctx.fillStyle = 'rgba(11, 11, 20, 0.6)';
+    ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+    drawCenteredText('PAUSA', 290, 'bold 44px monospace', '#ffffff');
+    drawCenteredText('Pulsa P o Esc para continuar', 330, '16px monospace', '#cccccc');
   } else if (game.state === 'gameover' || game.state === 'won') {
     ctx.fillStyle = 'rgba(11, 11, 20, 0.7)';
     ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
