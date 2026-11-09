@@ -7,6 +7,7 @@ const PADDLE_H = 14;
 const PADDLE_SPEED = 420; // px/s (teclado)
 const BALL_SIZE = 14;
 const BALL_SPEED = 360; // px/s, constante
+const MAX_BOUNCE_ANGLE = Math.PI / 3; // 60° respecto a la vertical
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -117,6 +118,23 @@ function update(dt) {
     if (ball.y < 0) {
       ball.y = 0;
       ball.vy = Math.abs(ball.vy);
+    }
+    // Rebote en la pala: ángulo según el punto de impacto
+    if (
+      ball.vy > 0 &&
+      ball.x + ball.size > paddle.x &&
+      ball.x < paddle.x + paddle.w &&
+      ball.y + ball.size > paddle.y &&
+      ball.y < paddle.y + paddle.h
+    ) {
+      const ballCenter = ball.x + ball.size / 2;
+      const paddleCenter = paddle.x + paddle.w / 2;
+      // -1 (borde izquierdo) .. 0 (centro) .. 1 (borde derecho)
+      const offset = Math.max(-1, Math.min(1, (ballCenter - paddleCenter) / (paddle.w / 2)));
+      const angle = offset * MAX_BOUNCE_ANGLE; // respecto a la vertical
+      ball.vx = BALL_SPEED * Math.sin(angle);
+      ball.vy = -BALL_SPEED * Math.cos(angle);
+      ball.y = paddle.y - ball.size;
     }
     // Por abajo no rebota: perder la bola llega en el Paso 9
   }
