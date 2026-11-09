@@ -117,6 +117,24 @@ function launchBall() {
   game.ball.vy = -BALL_SPEED;
 }
 
+// Genera las partículas de un bloque roto: nacen en su centro, con dirección y velocidad aleatorias
+function spawnParticles(brick) {
+  const cx = brick.x + brick.w / 2;
+  const cy = brick.y + brick.h / 2;
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = PARTICLE_SPEED_MIN + Math.random() * (PARTICLE_SPEED_MAX - PARTICLE_SPEED_MIN);
+    game.particles.push({
+      x: cx,
+      y: cy,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      color: PARTICLE_COLORS[brick.color],
+      age: 0,
+    });
+  }
+}
+
 // Empieza una partida nueva: 3 vidas, 0 puntos, 60 bloques, bola pegada
 function startGame() {
   game.score = 0;
@@ -271,6 +289,7 @@ function update(dt) {
       }
       b.alive = false;
       game.explosions.push({ x: b.x, y: b.y, w: b.w, h: b.h, color: b.color, start: performance.now() });
+      spawnParticles(b);
       game.score += BRICK_POINTS;
       break;
     }
