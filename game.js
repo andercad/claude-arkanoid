@@ -102,7 +102,7 @@ function playSound(audio) {
 
 // Estado del juego (se irá ampliando en pasos posteriores)
 const game = {
-  state: 'start', // 'start' | 'playing' | 'paused' | 'gameover' | 'won'
+  state: 'start', // 'start' | 'playing' | 'paused' | 'levelcomplete' | 'gameover' | 'won'
   score: 0,
   highScore: 0, // leído de localStorage al cargar
   lives: INITIAL_LIVES,
@@ -207,12 +207,10 @@ function spawnParticles(brick) {
   }
 }
 
-// Empieza una partida nueva: 3 vidas, 0 puntos, 60 bloques, bola pegada
-function startGame() {
-  game.score = 0;
-  game.lives = INITIAL_LIVES;
-  game.level = 1;
-  game.bricks = createBricks(game.level);
+// Prepara un nivel: bloques del patrón, sin efectos previos, pala centrada y bola pegada
+function startLevel(level) {
+  game.level = level;
+  game.bricks = createBricks(level);
   game.explosions = [];
   game.particles = [];
   game.paddle.x = (CANVAS_W - PADDLE_W) / 2;
@@ -220,10 +218,19 @@ function startGame() {
   game.state = 'playing';
 }
 
+// Empieza una partida nueva: 3 vidas, 0 puntos, nivel 1
+function startGame() {
+  game.score = 0;
+  game.lives = INITIAL_LIVES;
+  startLevel(1);
+}
+
 // Acción de Espacio / clic según el estado
 function handleAction() {
   if (game.state === 'start' || game.state === 'gameover' || game.state === 'won') {
     startGame();
+  } else if (game.state === 'levelcomplete') {
+    startLevel(game.level + 1);
   } else if (game.state === 'playing' && game.ball.stuck) {
     launchBall();
   }
@@ -387,9 +394,13 @@ function update(dt) {
       break;
     }
 
-    // Victoria: no quedan bloques
+    // Nivel completado: no quedan bloques (tras el último nivel, victoria)
     if (game.bricks.every((b) => !b.alive)) {
-      endGame('won');
+      if (game.level < LEVEL_COUNT) {
+        game.state = 'levelcomplete';
+      } else {
+        endGame('won');
+      }
       return;
     }
 
@@ -463,6 +474,11 @@ function render() {
     ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
     drawCenteredText('PAUSA', 290, 'bold 44px monospace', '#ffffff');
     drawCenteredText('Pulsa P o Esc para continuar', 330, '16px monospace', '#cccccc');
+  } else if (game.state === 'levelcomplete') {
+    ctx.fillStyle = 'rgba(11, 11, 20, 0.7)';
+    ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+    drawCenteredText('NIVEL ' + game.level + ' COMPLETADO', 280, 'bold 36px monospace', '#7CFC00');
+    drawCenteredText('Espacio o clic para continuar', 330, '16px monospace', '#cccccc');
   } else if (game.state === 'gameover' || game.state === 'won') {
     ctx.fillStyle = 'rgba(11, 11, 20, 0.7)';
     ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);

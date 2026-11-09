@@ -129,23 +129,23 @@ Convenciones:
 
 ## Acceptance criteria
 
-- [ ] El juego tiene exactamente 5 niveles y empieza siempre en el nivel 1.
-- [ ] El nivel 1 tiene 60 bloques, el 2 tiene 40, el 3 tiene 30, el 4 tiene 30 y el 5 tiene 24.
-- [ ] Los cinco patrones son visualmente distintos: rejilla, pirámide, damero, columnas alternas y diamante.
-- [ ] Cada bloque conserva el color de su fila y vale 10 puntos.
-- [ ] La velocidad de la bola es ~360 px/s en el nivel 1 y aumenta un 8 % de la base en cada nivel (~475 px/s en el 5).
-- [ ] La velocidad se mantiene constante durante un mismo nivel.
-- [ ] Al romper el último bloque de los niveles 1 a 4 aparece «NIVEL N COMPLETADO».
-- [ ] Espacio o clic en esa pantalla empieza el siguiente nivel con la bola pegada a la pala y la pala centrada.
-- [ ] Las vidas y la puntuación se mantienen al cambiar de nivel.
-- [ ] Perder la bola resta una vida y recoloca la bola sin cambiar de nivel ni de patrón.
-- [ ] Al romper el último bloque del nivel 5 aparece la pantalla de victoria y se guarda el récord si se supera.
-- [ ] Con 0 vidas aparece game over; Espacio o clic reinicia en el nivel 1 con 3 vidas, 0 puntos y 60 bloques.
-- [ ] El HUD muestra «NIVEL N» con el nivel actual, además de puntos, récord y vidas.
-- [ ] Pausar con `P` o `Esc` solo funciona durante `playing` y no afecta al estado `levelcomplete`.
-- [ ] Al empezar un nivel no quedan explosiones ni partículas del anterior.
-- [ ] No se ha modificado ningún archivo salvo `game.js`.
-- [ ] Las partículas, los sonidos (si la SPEC 03 está implementada) y el resto de reglas de las SPEC 01 y 02 no cambian.
+- [x] El juego tiene exactamente 5 niveles y empieza siempre en el nivel 1.
+- [x] El nivel 1 tiene 60 bloques, el 2 tiene 40, el 3 tiene 30, el 4 tiene 30 y el 5 tiene 24.
+- [x] Los cinco patrones son visualmente distintos: rejilla, pirámide, damero, columnas alternas y diamante.
+- [x] Cada bloque conserva el color de su fila y vale 10 puntos.
+- [x] La velocidad de la bola es ~360 px/s en el nivel 1 y aumenta un 8 % de la base en cada nivel (~475 px/s en el 5).
+- [x] La velocidad se mantiene constante durante un mismo nivel.
+- [x] Al romper el último bloque de los niveles 1 a 4 aparece «NIVEL N COMPLETADO».
+- [x] Espacio o clic en esa pantalla empieza el siguiente nivel con la bola pegada a la pala y la pala centrada.
+- [x] Las vidas y la puntuación se mantienen al cambiar de nivel.
+- [x] Perder la bola resta una vida y recoloca la bola sin cambiar de nivel ni de patrón.
+- [x] Al romper el último bloque del nivel 5 aparece la pantalla de victoria y se guarda el récord si se supera.
+- [x] Con 0 vidas aparece game over; Espacio o clic reinicia en el nivel 1 con 3 vidas, 0 puntos y 60 bloques.
+- [x] El HUD muestra «NIVEL N» con el nivel actual, además de puntos, récord y vidas.
+- [x] Pausar con `P` o `Esc` solo funciona durante `playing` y no afecta al estado `levelcomplete`.
+- [x] Al empezar un nivel no quedan explosiones ni partículas del anterior.
+- [x] No se ha modificado ningún archivo salvo `game.js`.
+- [x] Las partículas, los sonidos (si la SPEC 03 está implementada) y el resto de reglas de las SPEC 01 y 02 no cambian.
 
 ---
 
