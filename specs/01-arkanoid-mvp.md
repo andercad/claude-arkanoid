@@ -101,24 +101,24 @@ Convenciones:
 
 ## Acceptance criteria
 
-- [ ] Abrir `index.html` con doble clic carga el juego sin errores en la consola.
-- [ ] El canvas mide 480x640 px y la pantalla de inicio muestra el título y la instrucción de empezar.
-- [ ] Espacio o clic en la pantalla de inicio comienza la partida con la bola pegada a la pala.
-- [ ] La pala se mueve con flechas, A/D y ratón, y no sale del canvas.
-- [ ] Espacio o clic lanza la bola; antes del lanzamiento la bola sigue a la pala.
-- [ ] La bola rebota en paredes laterales, techo, pala y bloques.
-- [ ] Golpear la pala en el borde produce un ángulo mayor que en el centro, con un máximo de 60° respecto a la vertical.
-- [ ] La velocidad de la bola es constante durante toda la partida.
-- [ ] Hay 60 bloques al inicio (10 columnas x 6 filas), con un color distinto por fila.
-- [ ] Romper un bloque suma exactamente 10 puntos y lo elimina del juego.
-- [ ] Romper un bloque reproduce la animación de explosión en su posición.
-- [ ] Empezar con 3 vidas; perder la bola por abajo resta una vida y vuelve a pegarla a la pala.
-- [ ] Con 0 vidas aparece la pantalla de game over con la puntuación final.
-- [ ] Al romper los 60 bloques aparece la pantalla de victoria.
-- [ ] Espacio o clic en game over o victoria reinicia la partida con 3 vidas, 0 puntos y 60 bloques.
-- [ ] `P` o `Esc` pausa el juego durante `playing`; pulsar de nuevo reanuda sin que la bola salte.
-- [ ] El HUD muestra puntuación, récord y vidas actuales.
-- [ ] El récord se guarda en `localStorage` bajo `arkanoid:v1:highScore` y se conserva al recargar la página.
+- [x] Abrir `index.html` con doble clic carga el juego sin errores en la consola.
+- [x] El canvas mide 480x640 px y la pantalla de inicio muestra el título y la instrucción de empezar.
+- [x] Espacio o clic en la pantalla de inicio comienza la partida con la bola pegada a la pala.
+- [x] La pala se mueve con flechas, A/D y ratón, y no sale del canvas.
+- [x] Espacio o clic lanza la bola; antes del lanzamiento la bola sigue a la pala.
+- [x] La bola rebota en paredes laterales, techo, pala y bloques.
+- [x] Golpear la pala en el borde produce un ángulo mayor que en el centro, con un máximo de 60° respecto a la vertical.
+- [x] La velocidad de la bola es constante durante toda la partida.
+- [x] Hay 60 bloques al inicio (10 columnas x 6 filas), con un color distinto por fila.
+- [x] Romper un bloque suma exactamente 10 puntos y lo elimina del juego.
+- [x] Romper un bloque reproduce la animación de explosión en su posición.
+- [x] Empezar con 3 vidas; perder la bola por abajo resta una vida y vuelve a pegarla a la pala.
+- [x] Con 0 vidas aparece la pantalla de game over con la puntuación final.
+- [x] Al romper los 60 bloques aparece la pantalla de victoria.
+- [x] Espacio o clic en game over o victoria reinicia la partida con 3 vidas, 0 puntos y 60 bloques.
+- [x] `P` o `Esc` pausa el juego durante `playing`; pulsar de nuevo reanuda sin que la bola salte.
+- [x] El HUD muestra puntuación, récord y vidas actuales.
+- [x] El récord se guarda en `localStorage` bajo `arkanoid:v1:highScore` y se conserva al recargar la página.
 
 ---
 
@@ -130,6 +130,7 @@ Convenciones:
 - **Sí:** velocidad de bola constante. Menos parámetros que ajustar; la aceleración queda para una spec futura.
 - **Sí:** 3 vidas, puntuación de 10 por bloque y récord en `localStorage`. Cierra el bucle de juego con riesgo mínimo.
 - **Sí:** archivos `index.html`, `style.css` y `game.js` con scripts globales. Funciona abriendo con doble clic (sin servidor) y respeta que `assets/spritesheet.js` no es módulo.
+- **Sí:** vidas en el HUD como iconos de bola, no como número. Se entiende de un vistazo y reutiliza el sprite existente.
 - **Sí:** clave `arkanoid:v1:highScore`. El prefijo de versión permite migrar el formato más adelante.
 - **Sí:** canvas fijo 480x640 con bloques de 48x24 (sprite x1.5). Las 10 columnas ocupan exactamente el ancho.
 - **No:** varios ficheros JS (`paddle.js`, `ball.js`…). Sobreingeniería para este tamaño.

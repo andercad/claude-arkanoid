@@ -10,6 +10,7 @@ const BRICK_TOP = 80; // margen superior para el HUD
 const BRICK_COLORS = ['red', 'yellow', 'cyan', 'magenta', 'hotpink', 'green']; // de arriba a abajo
 const BRICK_POINTS = 10;
 const INITIAL_LIVES = 3;
+const HIGHSCORE_KEY = 'arkanoid:v1:highScore';
 const PADDLE_W = 96;
 const PADDLE_H = 14;
 const PADDLE_SPEED = 420; // px/s (teclado)
@@ -24,12 +25,42 @@ const ctx = canvas.getContext('2d');
 const game = {
   state: 'start', // 'start' | 'playing' | 'paused' | 'gameover' | 'won'
   score: 0,
+  highScore: 0, // leído de localStorage al cargar
   lives: INITIAL_LIVES,
   paddle: { x: (CANVAS_W - PADDLE_W) / 2, y: 600, w: PADDLE_W, h: PADDLE_H },
   ball: { x: 0, y: 0, vx: 0, vy: 0, size: BALL_SIZE, stuck: true },
   bricks: [], // { x, y, w, h, color, alive }
   explosions: [], // { x, y, w, h, color, start } (start en ms)
 };
+
+// Récord: localStorage con respaldo en memoria si falla
+function loadHighScore() {
+  try {
+    const value = parseInt(localStorage.getItem(HIGHSCORE_KEY), 10);
+    return Number.isFinite(value) && value > 0 ? value : 0;
+  } catch (e) {
+    return 0;
+  }
+}
+
+function saveHighScore(value) {
+  try {
+    localStorage.setItem(HIGHSCORE_KEY, String(value));
+  } catch (e) {
+    // Sin localStorage: el récord solo vive en memoria
+  }
+}
+
+// Al terminar la partida (game over o victoria): guarda el récord si se supera
+function endGame(state) {
+  game.state = state;
+  if (game.score > game.highScore) {
+    game.highScore = game.score;
+    saveHighScore(game.highScore);
+  }
+}
+
+game.highScore = loadHighScore();
 
 // Genera la rejilla de bloques (10x6, un color por fila)
 function createBricks() {
@@ -229,7 +260,7 @@ function update(dt) {
 
     // Victoria: no quedan bloques
     if (game.bricks.every((b) => !b.alive)) {
-      game.state = 'won';
+      endGame('won');
       return;
     }
 
@@ -237,7 +268,7 @@ function update(dt) {
     if (ball.y > CANVAS_H) {
       game.lives--;
       if (game.lives <= 0) {
-        game.state = 'gameover';
+        endGame('gameover');
       } else {
         stickBall();
       }
@@ -270,13 +301,20 @@ function render() {
   drawSprite(ctx, 'paddle', paddle.x, paddle.y, paddle.w, paddle.h);
   drawSprite(ctx, 'ball', ball.x, ball.y, ball.size, ball.size);
 
-  // HUD: puntuación (izquierda) y vidas (derecha)
+  // HUD: puntuación (izquierda), récord (centro) y vidas (derecha)
   ctx.textAlign = 'left';
   ctx.font = '16px monospace';
   ctx.fillStyle = '#ffffff';
   ctx.fillText('PUNTOS: ' + game.score, 12, 28);
-  ctx.textAlign = 'right';
-  ctx.fillText('VIDAS: ' + game.lives, CANVAS_W - 12, 28);
+  ctx.textAlign = 'center';
+  ctx.fillText('RÉCORD: ' + Math.max(game.highScore, game.score), CANVAS_W / 2, 28);
+  // Vidas: una bola por vida restante, alineadas a la derecha
+  const lifeSize = BALL_SIZE;
+  const lifeGap = 6;
+  for (let i = 0; i < game.lives; i++) {
+    const lx = CANVAS_W - 12 - lifeSize - i * (lifeSize + lifeGap);
+    drawSprite(ctx, 'ball', lx, 28 - lifeSize + 2, lifeSize, lifeSize);
+  }
 
   if (game.state === 'start') {
     ctx.fillStyle = 'rgba(11, 11, 20, 0.6)';
