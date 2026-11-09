@@ -79,16 +79,16 @@ Convenciones:
 
 ## Acceptance criteria
 
-- [ ] Romper un bloque genera exactamente 8 partículas del color de ese bloque.
-- [ ] Las partículas nacen en el centro del bloque roto.
-- [ ] Las partículas caen por gravedad y se desvanecen hasta desaparecer a los 400 ms.
-- [ ] Pasados 400 ms desde la rotura, `game.particles` no contiene partículas de ese bloque.
-- [ ] La explosión de sprites de 150 ms sigue viéndose a la vez que las partículas.
-- [ ] Pausar con `P` o `Esc` congela las partículas; al reanudar continúan desde donde estaban.
-- [ ] Tras game over o victoria y reinicio, `game.particles` está vacío.
-- [ ] Romper varios bloques seguidos no provoca errores en consola ni caída visible de fluidez.
-- [ ] No se ha modificado ningún archivo salvo `game.js`.
-- [ ] La puntuación, las colisiones y el resto del comportamiento de la SPEC 01 no cambian.
+- [x] Romper un bloque genera exactamente 8 partículas del color de ese bloque.
+- [x] Las partículas nacen en el centro del bloque roto.
+- [x] Las partículas caen por gravedad y se desvanecen hasta desaparecer a los 400 ms.
+- [x] Pasados 400 ms desde la rotura, `game.particles` no contiene partículas de ese bloque.
+- [x] La explosión de sprites de 150 ms sigue viéndose a la vez que las partículas.
+- [x] Pausar con `P` o `Esc` congela las partículas; al reanudar continúan desde donde estaban.
+- [x] Tras game over o victoria y reinicio, `game.particles` está vacío.
+- [x] Romper varios bloques seguidos no provoca errores en consola ni caída visible de fluidez.
+- [x] No se ha modificado ningún archivo salvo `game.js`.
+- [x] La puntuación, las colisiones y el resto del comportamiento de la SPEC 01 no cambian.
 
 ---
 

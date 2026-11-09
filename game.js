@@ -344,6 +344,13 @@ function render() {
     if (t < 0 || t >= 1) continue;
     drawFrame(ctx, frames[Math.floor(t * frames.length)], ex.x, ex.y, ex.w, ex.h);
   }
+  // Partículas: cuadrados centrados en (x, y) con alpha decreciente
+  for (const p of game.particles) {
+    ctx.globalAlpha = Math.max(0, 1 - p.age / PARTICLE_LIFE);
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x - PARTICLE_SIZE / 2, p.y - PARTICLE_SIZE / 2, PARTICLE_SIZE, PARTICLE_SIZE);
+  }
+  ctx.globalAlpha = 1;
   drawSprite(ctx, 'paddle', paddle.x, paddle.y, paddle.w, paddle.h);
   drawSprite(ctx, 'ball', ball.x, ball.y, ball.size, ball.size);
 
