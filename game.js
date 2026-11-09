@@ -9,6 +9,7 @@ const BRICK_H = 24;
 const BRICK_TOP = 80; // margen superior para el HUD
 const BRICK_COLORS = ['red', 'yellow', 'cyan', 'magenta', 'hotpink', 'green']; // de arriba a abajo
 const BRICK_POINTS = 10;
+const INITIAL_LIVES = 3;
 const PADDLE_W = 96;
 const PADDLE_H = 14;
 const PADDLE_SPEED = 420; // px/s (teclado)
@@ -21,8 +22,9 @@ const ctx = canvas.getContext('2d');
 
 // Estado del juego (se irá ampliando en pasos posteriores)
 const game = {
-  state: 'start', // 'start' | 'playing' (el resto llega en pasos posteriores)
+  state: 'start', // 'start' | 'playing' | 'gameover' | 'won' (pausa llega en el Paso 10)
   score: 0,
+  lives: INITIAL_LIVES,
   paddle: { x: (CANVAS_W - PADDLE_W) / 2, y: 600, w: PADDLE_W, h: PADDLE_H },
   ball: { x: 0, y: 0, vx: 0, vy: 0, size: BALL_SIZE, stuck: true },
   bricks: [], // { x, y, w, h, color, alive }
@@ -67,11 +69,20 @@ function launchBall() {
   game.ball.vy = -BALL_SPEED;
 }
 
+// Empieza una partida nueva: 3 vidas, 0 puntos, 60 bloques, bola pegada
+function startGame() {
+  game.score = 0;
+  game.lives = INITIAL_LIVES;
+  game.bricks = createBricks();
+  game.paddle.x = (CANVAS_W - PADDLE_W) / 2;
+  stickBall();
+  game.state = 'playing';
+}
+
 // Acción de Espacio / clic según el estado
 function handleAction() {
-  if (game.state === 'start') {
-    game.state = 'playing';
-    stickBall();
+  if (game.state === 'start' || game.state === 'gameover' || game.state === 'won') {
+    startGame();
   } else if (game.state === 'playing' && game.ball.stuck) {
     launchBall();
   }
@@ -192,7 +203,22 @@ function update(dt) {
       game.score += BRICK_POINTS;
       break;
     }
-    // Por abajo no rebota: perder la bola llega en el Paso 9
+
+    // Victoria: no quedan bloques
+    if (game.bricks.every((b) => !b.alive)) {
+      game.state = 'won';
+      return;
+    }
+
+    // Bola perdida por abajo: resta una vida
+    if (ball.y > CANVAS_H) {
+      game.lives--;
+      if (game.lives <= 0) {
+        game.state = 'gameover';
+      } else {
+        stickBall();
+      }
+    }
   }
 }
 
@@ -214,11 +240,26 @@ function render() {
   drawSprite(ctx, 'paddle', paddle.x, paddle.y, paddle.w, paddle.h);
   drawSprite(ctx, 'ball', ball.x, ball.y, ball.size, ball.size);
 
+  // HUD: puntuación (izquierda) y vidas (derecha)
+  ctx.textAlign = 'left';
+  ctx.font = '16px monospace';
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText('PUNTOS: ' + game.score, 12, 28);
+  ctx.textAlign = 'right';
+  ctx.fillText('VIDAS: ' + game.lives, CANVAS_W - 12, 28);
+
   if (game.state === 'start') {
     ctx.fillStyle = 'rgba(11, 11, 20, 0.6)';
     ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
     drawCenteredText('ARKANOID', 260, 'bold 48px monospace', '#ffffff');
     drawCenteredText('Pulsa Espacio o haz clic para empezar', 320, '16px monospace', '#cccccc');
+  } else if (game.state === 'gameover' || game.state === 'won') {
+    ctx.fillStyle = 'rgba(11, 11, 20, 0.7)';
+    ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+    const won = game.state === 'won';
+    drawCenteredText(won ? '¡VICTORIA!' : 'GAME OVER', 260, 'bold 44px monospace', won ? '#7CFC00' : '#ff5555');
+    drawCenteredText('Puntuación final: ' + game.score, 310, '18px monospace', '#ffffff');
+    drawCenteredText('Espacio o clic para reiniciar', 350, '16px monospace', '#cccccc');
   } else if (game.state === 'playing' && ball.stuck) {
     drawCenteredText('Espacio o clic para lanzar', 400, '14px monospace', '#cccccc');
   }
