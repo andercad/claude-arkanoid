@@ -446,14 +446,13 @@ function render() {
   drawSprite(ctx, 'paddle', paddle.x, paddle.y, paddle.w, paddle.h);
   drawSprite(ctx, 'ball', ball.x, ball.y, ball.size, ball.size);
 
-  // HUD: puntuación (izquierda), récord (centro) y vidas (derecha)
+  // HUD en una línea: puntos, récord, nivel y vidas (derecha)
   ctx.textAlign = 'left';
   ctx.font = '16px monospace';
   ctx.fillStyle = '#ffffff';
   ctx.fillText('PUNTOS: ' + game.score, 12, 28);
-  ctx.fillText('NIVEL ' + game.level, 12, 52);
-  ctx.textAlign = 'center';
-  ctx.fillText('RÉCORD: ' + Math.max(game.highScore, game.score), CANVAS_W / 2, 28);
+  ctx.fillText('RÉCORD: ' + Math.max(game.highScore, game.score), 150, 28);
+  ctx.fillText('NIVEL: ' + game.level, 295, 28);
   // Vidas: una bola por vida restante, alineadas a la derecha
   const lifeSize = BALL_SIZE;
   const lifeGap = 6;
