@@ -101,9 +101,24 @@ function update(dt) {
     ball.x = paddle.x + (paddle.w - ball.size) / 2;
     ball.y = paddle.y - ball.size;
   } else if (game.state === 'playing') {
-    // Movimiento básico; rebotes llegan en el Paso 5
     ball.x += ball.vx * dt;
     ball.y += ball.vy * dt;
+
+    // Rebote en paredes laterales
+    if (ball.x < 0) {
+      ball.x = 0;
+      ball.vx = Math.abs(ball.vx);
+    } else if (ball.x + ball.size > CANVAS_W) {
+      ball.x = CANVAS_W - ball.size;
+      ball.vx = -Math.abs(ball.vx);
+    }
+
+    // Rebote en el techo
+    if (ball.y < 0) {
+      ball.y = 0;
+      ball.vy = Math.abs(ball.vy);
+    }
+    // Por abajo no rebota: perder la bola llega en el Paso 9
   }
 }
 
