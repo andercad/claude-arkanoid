@@ -27,7 +27,7 @@ La SPEC 01 dejó fuera varios niveles y la aceleración de la bola. Esta spec **
 - Game over o victoria y reinicio vuelven al nivel 1 con 3 vidas y 0 puntos.
 - El HUD muestra «NIVEL N» sin romper el layout actual.
 - Selector de nivel en la pantalla de pausa: con el juego en `paused`, las teclas `1`–`5` (o clic en el botón del nivel) saltan a ese nivel con `startLevel(n)`. Se muestra la lista «1 2 3 4 5» con el nivel actual resaltado. Vidas y puntuación se mantienen; la bola queda pegada y el juego sale de la pausa a `start` del nivel elegido.
-- Todos los cambios van en `game.js`.
+- Los patrones (`LEVELS`) viven en un archivo independiente `levels.js`, cargado desde `index.html` antes de `game.js`. El resto de cambios van en `game.js`.
 
 **Out of scope (for future specs):**
 
@@ -50,6 +50,7 @@ La SPEC 01 dejó fuera varios niveles y la aceleración de la bola. Esta spec **
 const LEVEL_COUNT = 5;
 const LEVEL_SPEED_STEP = 0.08; // +8 % de BALL_SPEED por nivel
 
+// levels.js (script global, sin módulos; se carga antes que game.js)
 // Un patrón por nivel: 6 filas x 10 columnas. 'X' = bloque, '.' = hueco.
 // El color de cada bloque lo da su fila (BRICK_COLORS[fila]).
 const LEVELS = [
@@ -128,6 +129,8 @@ Convenciones:
 4. Añadir `startLevel(level)` y el estado `levelcomplete`: al romper el último bloque de un nivel <5 se pasa a `levelcomplete` con pantalla «NIVEL N COMPLETADO» y Espacio o clic llama a `startLevel(level + 1)`; en el nivel 5 se llama a `endGame('won')`. `startGame()` pasa a usar `startLevel(1)`. Prueba manual: jugar o romper bloques desde consola para recorrer los 5 niveles, ver la victoria tras el 5 y comprobar que el reinicio vuelve al nivel 1.
 5. Añadir el selector de nivel en la pausa: dibujar en la pantalla `paused` la fila «1 2 3 4 5» con el nivel actual resaltado y gestionar las teclas `1`–`5` y el clic sobre cada número solo en estado `paused`, llamando a `startLevel(n)` y dejando el estado listo para lanzar la bola. Prueba manual: pausar con `P`, pulsar `3` y ver el damero con la bola pegada, vidas y puntos intactos; repetir con cada nivel y comprobar que las teclas `1`–`5` no hacen nada fuera de la pausa.
 
+6. Mover `LEVELS` de `game.js` a un nuevo `levels.js` en la raíz (script global, sin módulos) y añadir `<script src="levels.js"></script>` en `index.html` justo antes de `game.js`. `LEVEL_COUNT`, `LEVEL_SPEED_STEP` y el resto de la lógica se quedan en `game.js`. Prueba manual: el juego se comporta igual que antes (5 niveles, patrones, selector de pausa) y en consola `LEVELS.length` vale 5.
+
 ---
 
 ## Acceptance criteria
@@ -151,7 +154,8 @@ Convenciones:
 - [x] Pulsar `1`–`5` (o hacer clic en el número) en pausa empieza ese nivel con su patrón y su velocidad, bola pegada y pala centrada.
 - [x] Al elegir nivel desde la pausa se mantienen vidas y puntuación, y no quedan explosiones ni partículas.
 - [x] Las teclas `1`–`5` no tienen efecto fuera del estado `paused`.
-- [x] No se ha modificado ningún archivo salvo `game.js`.
+- [x] `LEVELS` está definido en `levels.js` (cargado en `index.html` antes de `game.js`) y ya no aparece en `game.js`.
+- [x] No se ha modificado ningún archivo salvo `game.js`, `levels.js` e `index.html`.
 - [x] Las partículas, los sonidos (si la SPEC 03 está implementada) y el resto de reglas de las SPEC 01 y 02 no cambian.
 
 ---
@@ -171,7 +175,8 @@ Convenciones:
 - **No:** bloques de varios golpes o indestructibles. Ampliaría sprites y lógica; irían en otra spec.
 - **No:** bucle infinito tras el nivel 5. El usuario pidió exactamente cinco niveles.
 - **No:** reponer vidas por nivel. Quita tensión y no se pidió.
-- **No:** varios ficheros JS (`levels.js`). Se mantiene el patrón de un único `game.js`.
+- **Sí:** `LEVELS` en un `levels.js` independiente (decisión del usuario). Separa los datos de los niveles de la lógica y facilita añadir o ajustar patrones. Script global, sin módulos, igual que `assets/spritesheet.js`.
+- **No:** mover el resto de la lógica de niveles fuera de `game.js`. Solo los patrones van a `levels.js`.
 
 ---
 
