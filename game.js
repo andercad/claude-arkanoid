@@ -245,6 +245,35 @@ function togglePause() {
   }
 }
 
+// Selector de nivel de la pausa: botones "1".."5" centrados en una fila
+const LEVEL_BTN_SIZE = 36;
+const LEVEL_BTN_GAP = 12;
+const LEVEL_BTN_Y = 380;
+
+function levelButtonRect(n) {
+  const totalW = LEVEL_COUNT * LEVEL_BTN_SIZE + (LEVEL_COUNT - 1) * LEVEL_BTN_GAP;
+  const x = (CANVAS_W - totalW) / 2 + (n - 1) * (LEVEL_BTN_SIZE + LEVEL_BTN_GAP);
+  return { x, y: LEVEL_BTN_Y, w: LEVEL_BTN_SIZE, h: LEVEL_BTN_SIZE };
+}
+
+// Clic en la pausa: si cae sobre un botón de nivel, salta a ese nivel
+function handleCanvasClick(e) {
+  if (game.state !== 'paused') {
+    handleAction();
+    return;
+  }
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left - canvas.clientLeft;
+  const my = e.clientY - rect.top - canvas.clientTop;
+  for (let n = 1; n <= LEVEL_COUNT; n++) {
+    const r = levelButtonRect(n);
+    if (mx >= r.x && mx < r.x + r.w && my >= r.y && my < r.y + r.h) {
+      startLevel(n);
+      return;
+    }
+  }
+}
+
 let lastTime = 0;
 
 // Entrada
@@ -276,9 +305,19 @@ window.addEventListener('keydown', (e) => {
     if (!e.repeat) togglePause();
     return;
   }
+  // Teclas 1..5: solo en pausa, saltan a ese nivel
+  const digit = /^(?:Digit|Numpad)([1-9])$/.exec(e.code);
+  if (digit) {
+    const n = Number(digit[1]);
+    if (game.state === 'paused' && n <= LEVEL_COUNT && !e.repeat) {
+      e.preventDefault();
+      startLevel(n);
+    }
+    return;
+  }
   setKey(e, true);
 });
-canvas.addEventListener('mousedown', handleAction);
+canvas.addEventListener('mousedown', handleCanvasClick);
 window.addEventListener('keyup', (e) => setKey(e, false));
 
 // La pala sigue al cursor en X (centrada en el cursor)
@@ -423,6 +462,13 @@ function drawCenteredText(text, y, font, color) {
   ctx.fillText(text, CANVAS_W / 2, y);
 }
 
+function drawCenteredTextAt(text, x, y, font, color) {
+  ctx.font = font;
+  ctx.fillStyle = color;
+  ctx.textAlign = 'center';
+  ctx.fillText(text, x, y);
+}
+
 function render() {
   ctx.fillStyle = '#14142b';
   ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
@@ -474,6 +520,18 @@ function render() {
     ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
     drawCenteredText('PAUSA', 290, 'bold 44px monospace', '#ffffff');
     drawCenteredText('Pulsa P o Esc para continuar', 330, '16px monospace', '#cccccc');
+    // Selector de nivel: nivel actual resaltado
+    drawCenteredText('Elegir nivel (1-5)', 365, '14px monospace', '#cccccc');
+    for (let n = 1; n <= LEVEL_COUNT; n++) {
+      const r = levelButtonRect(n);
+      const current = n === game.level;
+      ctx.fillStyle = current ? '#ffd835' : 'rgba(255, 255, 255, 0.12)';
+      ctx.fillRect(r.x, r.y, r.w, r.h);
+      ctx.strokeStyle = current ? '#ffffff' : '#666688';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(r.x, r.y, r.w, r.h);
+      drawCenteredTextAt(String(n), r.x + r.w / 2, r.y + r.h / 2 + 7, 'bold 20px monospace', current ? '#14142b' : '#ffffff');
+    }
   } else if (game.state === 'levelcomplete') {
     ctx.fillStyle = 'rgba(11, 11, 20, 0.7)';
     ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);

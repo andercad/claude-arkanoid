@@ -26,6 +26,7 @@ La SPEC 01 dejó fuera varios niveles y la aceleración de la bola. Esta spec **
 - Al completar el nivel 5 se muestra la pantalla de victoria actual (`won`).
 - Game over o victoria y reinicio vuelven al nivel 1 con 3 vidas y 0 puntos.
 - El HUD muestra «NIVEL N» sin romper el layout actual.
+- Selector de nivel en la pantalla de pausa: con el juego en `paused`, las teclas `1`–`5` (o clic en el botón del nivel) saltan a ese nivel con `startLevel(n)`. Se muestra la lista «1 2 3 4 5» con el nivel actual resaltado. Vidas y puntuación se mantienen; la bola queda pegada y el juego sale de la pausa a `start` del nivel elegido.
 - Todos los cambios van en `game.js`.
 
 **Out of scope (for future specs):**
@@ -34,7 +35,8 @@ La SPEC 01 dejó fuera varios niveles y la aceleración de la bola. Esta spec **
 - Más de cinco niveles, bucle infinito tras el nivel 5 o generación aleatoria.
 - Rótulo «NIVEL N» al empezar cada nivel (solo HUD y pantalla intermedia).
 - Reponer vidas al pasar de nivel.
-- Selector de nivel, guardado de progreso o récord por nivel.
+- Guardado de progreso o récord por nivel.
+- Selector de nivel fuera de la pausa (menú inicial, pantalla de game over).
 - Power-ups.
 - Sonido en el cambio de nivel.
 - Cambiar ángulos de rebote, tamaño de pala o de bola por nivel.
@@ -124,6 +126,7 @@ Convenciones:
 2. Añadir `ballSpeed(level)` y usarla en `launchBall()` y en el rebote de la pala. Prueba manual: en consola, `game.level = 5` antes de lanzar hace la bola claramente más rápida; con nivel 1 va como antes.
 3. Mostrar «NIVEL N» en el HUD. Prueba manual: se ve «NIVEL 1» bajo la puntuación sin solapar nada.
 4. Añadir `startLevel(level)` y el estado `levelcomplete`: al romper el último bloque de un nivel <5 se pasa a `levelcomplete` con pantalla «NIVEL N COMPLETADO» y Espacio o clic llama a `startLevel(level + 1)`; en el nivel 5 se llama a `endGame('won')`. `startGame()` pasa a usar `startLevel(1)`. Prueba manual: jugar o romper bloques desde consola para recorrer los 5 niveles, ver la victoria tras el 5 y comprobar que el reinicio vuelve al nivel 1.
+5. Añadir el selector de nivel en la pausa: dibujar en la pantalla `paused` la fila «1 2 3 4 5» con el nivel actual resaltado y gestionar las teclas `1`–`5` y el clic sobre cada número solo en estado `paused`, llamando a `startLevel(n)` y dejando el estado listo para lanzar la bola. Prueba manual: pausar con `P`, pulsar `3` y ver el damero con la bola pegada, vidas y puntos intactos; repetir con cada nivel y comprobar que las teclas `1`–`5` no hacen nada fuera de la pausa.
 
 ---
 
@@ -144,6 +147,10 @@ Convenciones:
 - [x] El HUD muestra «NIVEL N» con el nivel actual, además de puntos, récord y vidas.
 - [x] Pausar con `P` o `Esc` solo funciona durante `playing` y no afecta al estado `levelcomplete`.
 - [x] Al empezar un nivel no quedan explosiones ni partículas del anterior.
+- [x] En la pausa se muestra el selector «1 2 3 4 5» con el nivel actual resaltado.
+- [x] Pulsar `1`–`5` (o hacer clic en el número) en pausa empieza ese nivel con su patrón y su velocidad, bola pegada y pala centrada.
+- [x] Al elegir nivel desde la pausa se mantienen vidas y puntuación, y no quedan explosiones ni partículas.
+- [x] Las teclas `1`–`5` no tienen efecto fuera del estado `paused`.
 - [x] No se ha modificado ningún archivo salvo `game.js`.
 - [x] Las partículas, los sonidos (si la SPEC 03 está implementada) y el resto de reglas de las SPEC 01 y 02 no cambian.
 
@@ -159,6 +166,7 @@ Convenciones:
 - **Sí:** pantalla intermedia «NIVEL N COMPLETADO» con Espacio o clic. Da respiro al jugador y evita que la bola salga sin avisar.
 - **Sí:** victoria tras el nivel 5 reutilizando el estado `won`. No añade pantallas nuevas.
 - **Sí:** «NIVEL N» en el HUD. Informa del progreso con poco coste.
+- **Sí:** selector de nivel solo en la pausa, con teclas `1`–`5` y clic. Reutiliza `startLevel(n)`; mantiene vidas y puntos (se puede usar para practicar o saltar niveles, sin guardado de progreso).
 - **No:** rótulo «NIVEL N» al empezar cada nivel. El usuario solo eligió el HUD.
 - **No:** bloques de varios golpes o indestructibles. Ampliaría sprites y lógica; irían en otra spec.
 - **No:** bucle infinito tras el nivel 5. El usuario pidió exactamente cinco niveles.
@@ -183,7 +191,7 @@ Convenciones:
 
 - Bloques de varios golpes, indestructibles o con puntos distintos.
 - Más de cinco niveles, bucle infinito o niveles aleatorios.
-- Selector de nivel o guardado de progreso.
+- Guardado de progreso o selector de nivel fuera de la pausa.
 - Rótulo «NIVEL N» al empezar cada nivel.
 - Reposición de vidas entre niveles.
 - Power-ups.
