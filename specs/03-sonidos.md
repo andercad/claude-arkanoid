@@ -68,17 +68,17 @@ Convenciones:
 
 ## Acceptance criteria
 
-- [ ] La bola rebotando en la pala reproduce `ball-bounce.mp3`.
-- [ ] La bola rebotando en el techo reproduce `ball-bounce.mp3`.
-- [ ] La bola rebotando en la pared izquierda y en la derecha reproduce `ball-bounce.mp3`.
-- [ ] Romper un bloque reproduce `break-sound.mp3` exactamente una vez.
-- [ ] Golpear un bloque no reproduce `ball-bounce.mp3`.
-- [ ] Si la bola toca dos bordes en el mismo frame (esquina), suena un único rebote.
-- [ ] Perder la bola por abajo, la pantalla de inicio, game over, victoria y la pausa no reproducen ningún sonido.
-- [ ] Varios rebotes o roturas seguidos se oyen solapados sin cortarse y sin errores en la consola.
-- [ ] Abrir `index.html` con doble clic funciona sin errores de carga de audio en la consola.
-- [ ] No se ha modificado ningún archivo salvo `game.js`.
-- [ ] La puntuación, las colisiones, las partículas y el resto del comportamiento de las SPEC 01 y 02 no cambian.
+- [x] La bola rebotando en la pala reproduce `ball-bounce.mp3`.
+- [x] La bola rebotando en el techo reproduce `ball-bounce.mp3`.
+- [x] La bola rebotando en la pared izquierda y en la derecha reproduce `ball-bounce.mp3`.
+- [x] Romper un bloque reproduce `break-sound.mp3` exactamente una vez.
+- [x] Golpear un bloque no reproduce `ball-bounce.mp3`.
+- [x] Si la bola toca dos bordes en el mismo frame (esquina), suena un único rebote.
+- [x] Perder la bola por abajo, la pantalla de inicio, game over, victoria y la pausa no reproducen ningún sonido.
+- [x] Varios rebotes o roturas seguidos se oyen solapados sin cortarse y sin errores en la consola.
+- [x] Abrir `index.html` con doble clic funciona sin errores de carga de audio en la consola.
+- [x] No se ha modificado ningún archivo salvo `game.js`.
+- [x] La puntuación, las colisiones, las partículas y el resto del comportamiento de las SPEC 01 y 02 no cambian.
 
 ---
 

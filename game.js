@@ -321,6 +321,7 @@ function update(dt) {
       b.alive = false;
       game.explosions.push({ x: b.x, y: b.y, w: b.w, h: b.h, color: b.color, start: performance.now() });
       spawnParticles(b);
+      playSound(sounds.brk);
       game.score += BRICK_POINTS;
       break;
     }
