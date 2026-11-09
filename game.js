@@ -256,19 +256,24 @@ function update(dt) {
     ball.x += ball.vx * dt;
     ball.y += ball.vy * dt;
 
+    let bounced = false; // máximo un sonido de rebote por frame
+
     // Rebote en paredes laterales
     if (ball.x < 0) {
       ball.x = 0;
       ball.vx = Math.abs(ball.vx);
+      bounced = true;
     } else if (ball.x + ball.size > CANVAS_W) {
       ball.x = CANVAS_W - ball.size;
       ball.vx = -Math.abs(ball.vx);
+      bounced = true;
     }
 
     // Rebote en el techo
     if (ball.y < 0) {
       ball.y = 0;
       ball.vy = Math.abs(ball.vy);
+      bounced = true;
     }
     // Rebote en la pala: ángulo según el punto de impacto
     if (
@@ -286,7 +291,10 @@ function update(dt) {
       ball.vx = BALL_SPEED * Math.sin(angle);
       ball.vy = -BALL_SPEED * Math.cos(angle);
       ball.y = paddle.y - ball.size;
+      bounced = true;
     }
+    if (bounced) playSound(sounds.bounce);
+
     // Colisión con bloques: rompe uno por frame e invierte solo el eje de menor solape
     for (const b of game.bricks) {
       if (!b.alive) continue;
