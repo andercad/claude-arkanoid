@@ -177,11 +177,16 @@ function stickBall() {
 
 stickBall();
 
+// Velocidad de la bola del nivel (px/s): +8 % de la base por nivel, constante dentro del nivel
+function ballSpeed(level) {
+  return BALL_SPEED * (1 + LEVEL_SPEED_STEP * (level - 1));
+}
+
 // Lanza la bola hacia arriba
 function launchBall() {
   game.ball.stuck = false;
   game.ball.vx = 0;
-  game.ball.vy = -BALL_SPEED;
+  game.ball.vy = -ballSpeed(game.level);
 }
 
 // Genera las partículas de un bloque roto: nacen en su centro, con dirección y velocidad aleatorias
@@ -343,8 +348,9 @@ function update(dt) {
       // -1 (borde izquierdo) .. 0 (centro) .. 1 (borde derecho)
       const offset = Math.max(-1, Math.min(1, (ballCenter - paddleCenter) / (paddle.w / 2)));
       const angle = offset * MAX_BOUNCE_ANGLE; // respecto a la vertical
-      ball.vx = BALL_SPEED * Math.sin(angle);
-      ball.vy = -BALL_SPEED * Math.cos(angle);
+      const speed = ballSpeed(game.level);
+      ball.vx = speed * Math.sin(angle);
+      ball.vy = -speed * Math.cos(angle);
       ball.y = paddle.y - ball.size;
       bounced = true;
     }
