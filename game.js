@@ -28,6 +28,7 @@ const game = {
   paddle: { x: (CANVAS_W - PADDLE_W) / 2, y: 600, w: PADDLE_W, h: PADDLE_H },
   ball: { x: 0, y: 0, vx: 0, vy: 0, size: BALL_SIZE, stuck: true },
   bricks: [], // { x, y, w, h, color, alive }
+  explosions: [], // { x, y, w, h, color, start } (start en ms)
 };
 
 // Genera la rejilla de bloques (10x6, un color por fila)
@@ -74,6 +75,7 @@ function startGame() {
   game.score = 0;
   game.lives = INITIAL_LIVES;
   game.bricks = createBricks();
+  game.explosions = [];
   game.paddle.x = (CANVAS_W - PADDLE_W) / 2;
   stickBall();
   game.state = 'playing';
@@ -147,6 +149,10 @@ function clampPaddle(x) {
 
 function update(dt) {
   if (game.state === 'paused') return; // todo congelado
+
+  // Descarta explosiones terminadas
+  const nowMs = performance.now();
+  game.explosions = game.explosions.filter((ex) => nowMs - ex.start < EXPLOSION_DURATION);
   const dir = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
   if (dir !== 0) {
     game.paddle.x = clampPaddle(game.paddle.x + dir * PADDLE_SPEED * dt);
@@ -216,6 +222,7 @@ function update(dt) {
         ball.y += fromTop ? -overlapY : overlapY;
       }
       b.alive = false;
+      game.explosions.push({ x: b.x, y: b.y, w: b.w, h: b.h, color: b.color, start: performance.now() });
       game.score += BRICK_POINTS;
       break;
     }
@@ -252,6 +259,13 @@ function render() {
   const { paddle, ball } = game;
   for (const b of game.bricks) {
     if (b.alive) drawSprite(ctx, 'block_' + b.color, b.x, b.y, b.w, b.h);
+  }
+  const renderNow = performance.now();
+  for (const ex of game.explosions) {
+    const frames = EXPLOSION_FRAMES[ex.color];
+    const t = (renderNow - ex.start) / EXPLOSION_DURATION;
+    if (t < 0 || t >= 1) continue;
+    drawFrame(ctx, frames[Math.floor(t * frames.length)], ex.x, ex.y, ex.w, ex.h);
   }
   drawSprite(ctx, 'paddle', paddle.x, paddle.y, paddle.w, paddle.h);
   drawSprite(ctx, 'ball', ball.x, ball.y, ball.size, ball.size);
