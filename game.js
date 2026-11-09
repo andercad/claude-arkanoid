@@ -442,6 +442,7 @@ function render() {
   ctx.font = '16px monospace';
   ctx.fillStyle = '#ffffff';
   ctx.fillText('PUNTOS: ' + game.score, 12, 28);
+  ctx.fillText('NIVEL ' + game.level, 12, 52);
   ctx.textAlign = 'center';
   ctx.fillText('RÉCORD: ' + Math.max(game.highScore, game.score), CANVAS_W / 2, 28);
   // Vidas: una bola por vida restante, alineadas a la derecha
