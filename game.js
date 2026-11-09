@@ -32,9 +32,22 @@ const PARTICLE_COLORS = {
   hotpink: '#ff4081',
   green: '#43a047',
 };
+const SOUND_BOUNCE_SRC = 'assets/sounds/ball-bounce.mp3';
+const SOUND_BREAK_SRC = 'assets/sounds/break-sound.mp3';
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
+
+// Audios base (se clonan al reproducir para poder solaparse)
+const sounds = {
+  bounce: new Audio(SOUND_BOUNCE_SRC),
+  brk: new Audio(SOUND_BREAK_SRC),
+};
+
+function playSound(audio) {
+  // catch: el navegador puede bloquear la reproducción (autoplay)
+  audio.cloneNode().play().catch(() => {});
+}
 
 // Estado del juego (se irá ampliando en pasos posteriores)
 const game = {
