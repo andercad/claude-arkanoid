@@ -219,6 +219,16 @@ function update(dt) {
   // Descarta explosiones terminadas
   const nowMs = performance.now();
   game.explosions = game.explosions.filter((ex) => nowMs - ex.start < EXPLOSION_DURATION);
+
+  // Partículas: mover, gravedad, envejecer con dt y descartar las que superen su vida
+  for (const p of game.particles) {
+    p.vy += PARTICLE_GRAVITY * dt;
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+    p.age += dt * 1000;
+  }
+  game.particles = game.particles.filter((p) => p.age < PARTICLE_LIFE);
+
   const dir = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
   if (dir !== 0) {
     game.paddle.x = clampPaddle(game.paddle.x + dir * PADDLE_SPEED * dt);
