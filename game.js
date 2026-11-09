@@ -10,6 +10,57 @@ const BRICK_TOP = 80; // margen superior para el HUD
 const BRICK_COLORS = ['red', 'yellow', 'cyan', 'magenta', 'hotpink', 'green']; // de arriba a abajo
 const BRICK_POINTS = 10;
 const INITIAL_LIVES = 3;
+const LEVEL_COUNT = 5;
+const LEVEL_SPEED_STEP = 0.08; // +8 % de BALL_SPEED por nivel
+// Un patrón por nivel: 6 filas x 10 columnas. 'X' = bloque, '.' = hueco.
+// El color de cada bloque lo da su fila (BRICK_COLORS[fila]).
+const LEVELS = [
+  // 1. Rejilla completa (60 bloques)
+  [
+    'XXXXXXXXXX',
+    'XXXXXXXXXX',
+    'XXXXXXXXXX',
+    'XXXXXXXXXX',
+    'XXXXXXXXXX',
+    'XXXXXXXXXX',
+  ],
+  // 2. Pirámide (40 bloques)
+  [
+    '....XX....',
+    '...XXXX...',
+    '..XXXXXX..',
+    '.XXXXXXXX.',
+    'XXXXXXXXXX',
+    'XXXXXXXXXX',
+  ],
+  // 3. Damero (30 bloques)
+  [
+    'X.X.X.X.X.',
+    '.X.X.X.X.X',
+    'X.X.X.X.X.',
+    '.X.X.X.X.X',
+    'X.X.X.X.X.',
+    '.X.X.X.X.X',
+  ],
+  // 4. Columnas alternas (30 bloques)
+  [
+    'X.X.X.X.X.',
+    'X.X.X.X.X.',
+    'X.X.X.X.X.',
+    'X.X.X.X.X.',
+    'X.X.X.X.X.',
+    'X.X.X.X.X.',
+  ],
+  // 5. Diamante (24 bloques)
+  [
+    '....XX....',
+    '...XXXX...',
+    '..XXXXXX..',
+    '..XXXXXX..',
+    '...XXXX...',
+    '....XX....',
+  ],
+];
 const HIGHSCORE_KEY = 'arkanoid:v1:highScore';
 const PADDLE_W = 96;
 const PADDLE_H = 14;
@@ -55,6 +106,7 @@ const game = {
   score: 0,
   highScore: 0, // leído de localStorage al cargar
   lives: INITIAL_LIVES,
+  level: 1, // 1..LEVEL_COUNT
   paddle: { x: (CANVAS_W - PADDLE_W) / 2, y: 600, w: PADDLE_W, h: PADDLE_H },
   ball: { x: 0, y: 0, vx: 0, vy: 0, size: BALL_SIZE, stuck: true },
   bricks: [], // { x, y, w, h, color, alive }
@@ -91,11 +143,13 @@ function endGame(state) {
 
 game.highScore = loadHighScore();
 
-// Genera la rejilla de bloques (10x6, un color por fila)
-function createBricks() {
+// Genera los bloques del nivel a partir de su patrón (un color por fila)
+function createBricks(level) {
+  const pattern = LEVELS[level - 1];
   const bricks = [];
   for (let row = 0; row < BRICK_ROWS; row++) {
     for (let col = 0; col < BRICK_COLS; col++) {
+      if (pattern[row][col] !== 'X') continue;
       bricks.push({
         x: col * BRICK_W,
         y: BRICK_TOP + row * BRICK_H,
@@ -109,7 +163,7 @@ function createBricks() {
   return bricks;
 }
 
-game.bricks = createBricks();
+game.bricks = createBricks(game.level);
 
 // Pega la bola al centro de la pala
 function stickBall() {
@@ -152,7 +206,8 @@ function spawnParticles(brick) {
 function startGame() {
   game.score = 0;
   game.lives = INITIAL_LIVES;
-  game.bricks = createBricks();
+  game.level = 1;
+  game.bricks = createBricks(game.level);
   game.explosions = [];
   game.particles = [];
   game.paddle.x = (CANVAS_W - PADDLE_W) / 2;
