@@ -2,6 +2,12 @@
 const CANVAS_W = 480;
 const CANVAS_H = 640;
 const MAX_DT = 1 / 30; // límite de delta time por frame (s)
+const BRICK_COLS = 10;
+const BRICK_ROWS = 6;
+const BRICK_W = 48; // 480 / 10 (sprite 32x16 escalado x1.5)
+const BRICK_H = 24;
+const BRICK_TOP = 80; // margen superior para el HUD
+const BRICK_COLORS = ['red', 'yellow', 'cyan', 'magenta', 'hotpink', 'green']; // de arriba a abajo
 const PADDLE_W = 96;
 const PADDLE_H = 14;
 const PADDLE_SPEED = 420; // px/s (teclado)
@@ -17,7 +23,28 @@ const game = {
   state: 'start', // 'start' | 'playing' (el resto llega en pasos posteriores)
   paddle: { x: (CANVAS_W - PADDLE_W) / 2, y: 600, w: PADDLE_W, h: PADDLE_H },
   ball: { x: 0, y: 0, vx: 0, vy: 0, size: BALL_SIZE, stuck: true },
+  bricks: [], // { x, y, w, h, color, alive }
 };
+
+// Genera la rejilla de bloques (10x6, un color por fila)
+function createBricks() {
+  const bricks = [];
+  for (let row = 0; row < BRICK_ROWS; row++) {
+    for (let col = 0; col < BRICK_COLS; col++) {
+      bricks.push({
+        x: col * BRICK_W,
+        y: BRICK_TOP + row * BRICK_H,
+        w: BRICK_W,
+        h: BRICK_H,
+        color: BRICK_COLORS[row],
+        alive: true,
+      });
+    }
+  }
+  return bricks;
+}
+
+game.bricks = createBricks();
 
 // Pega la bola al centro de la pala
 function stickBall() {
@@ -152,6 +179,9 @@ function render() {
   ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
 
   const { paddle, ball } = game;
+  for (const b of game.bricks) {
+    if (b.alive) drawSprite(ctx, 'block_' + b.color, b.x, b.y, b.w, b.h);
+  }
   drawSprite(ctx, 'paddle', paddle.x, paddle.y, paddle.w, paddle.h);
   drawSprite(ctx, 'ball', ball.x, ball.y, ball.size, ball.size);
 
